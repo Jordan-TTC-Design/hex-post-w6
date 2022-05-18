@@ -1,14 +1,65 @@
 <script>
 import { ref } from 'vue';
 import PageTitleBox from '@/components/front/PageTitleBox.vue';
+import postsStore from '@/stores/postsStore';
+import userStore from '@/stores/userStore';
 
 export default {
   components: {
     PageTitleBox,
   },
   setup() {
+    const userData = userStore();
+    const postsData = postsStore();
+    const password = ref('');
+    const oldPassword = ref('');
+    const confirmPassword = ref('');
     const pageNavSelect = ref(1);
-    return { pageNavSelect };
+    const imgUploadGetter = ref(null);
+    const editPhoto = ref(false);
+    const imgData = ref(null);
+    const imgHistory = ref('');
+    function toogleGetter() {
+      const [file] = imgUploadGetter.value.files;
+      imgData.value = file;
+      console.log(file);
+      imgHistory.value = userData.tempUser.photo;
+      const imgShow = window.URL || window.webkitURL;
+      userData.tempUser.photo = imgShow.createObjectURL(imgData.value);
+      editPhoto.value = true;
+      console.log(editPhoto.value, userData.tempUser.photo, imgData.value);
+    }
+    async function updateUserData() {
+      console.log(userData.tempUser);
+      if (editPhoto.value === true) {
+        console.log('開始上傳');
+        try {
+          const result = await postsData.upLoadImage(imgData.value);
+          console.log(result);
+          if (result.status) {
+            userData.tempUser.photo = result.data;
+          }
+          userData.updateUserData(userData.tempUser);
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        console.log('沒上傳');
+        userData.tempUser.photo = imgHistory.value;
+        userData.updateUserData(userData.tempUser);
+      }
+    }
+    return {
+      userData,
+      imgUploadGetter,
+      imgData,
+      pageNavSelect,
+      password,
+      confirmPassword,
+      oldPassword,
+      toogleGetter,
+      updateUserData,
+    };
   },
 };
 </script>
@@ -34,15 +85,21 @@ export default {
             重設密碼
           </li>
         </ul>
-        <div
+        <form
           v-if="pageNavSelect === 1"
+          @submit.prevent="updateUserData"
           class="border border-dark p-6 d-flex flex-column align-items-center"
         >
           <div class="userImg mb-6">
-            <img
-              class="userImg__img"
-              src="https://images.unsplash.com/photo-1648737155328-0c0012cf2f20?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-              alt="用戶底圖"
+            <img class="userImg__img" :src="userData.tempUser.photo" alt="用戶底圖" />
+            <label class="userImg__btn" for="imgUploader">變更照片</label>
+            <input
+              ref="imgUploadGetter"
+              id="imgUploader"
+              class="d-none"
+              type="file"
+              @change="toogleGetter"
+              accept="image/png, image/jpeg"
             />
           </div>
           <div class="w-75 d-flex flex-column gap-3">
@@ -54,6 +111,7 @@ export default {
                 placeholder="請輸入您的暱稱"
                 id="setting-userName"
                 aria-label="Username"
+                v-model="userData.tempUser.name"
               />
             </div>
             <div>
@@ -65,6 +123,8 @@ export default {
                     type="radio"
                     name="setting-gender"
                     id="setting-gender-male"
+                    v-model="userData.tempUser.gender"
+                    value="male"
                   />
                   <label class="form-check-label" for="setting-gender-male"> 男性 </label>
                 </div>
@@ -74,27 +134,42 @@ export default {
                     type="radio"
                     name="setting-gender"
                     id="setting-gender-female"
-                    checked
+                    v-model="userData.tempUser.gender"
+                    value="female"
                   />
                   <label class="form-check-label" for="setting-gender-female"> 女性 </label>
                 </div>
               </div>
             </div>
-            <button type="button" class="btn btn-primary">送出更新</button>
+            <button type="submit" class="btn btn-primary">送出更新</button>
           </div>
-        </div>
+        </form>
         <div
           v-if="pageNavSelect === 2"
           class="border border-dark p-6 d-flex flex-column align-items-center"
         >
-          <div class="w-75 d-flex flex-column gap-3">
+          <form
+            class="w-75 d-flex flex-column gap-3"
+            @submit.prevent="userData.updateMyPassword(email, password)"
+          >
             <div>
-              <label for="setting-newPassword" class="form-label">修改密嗎</label>
+              <label for="setting-oldPassword" class="form-label">原密碼</label>
+              <input
+                type="text"
+                class="form-control inputTool"
+                placeholder="請輸入原密碼"
+                id="setting-oldPassword"
+                v-model="oldPassword"
+              />
+            </div>
+            <div>
+              <label for="setting-newPassword" class="form-label">新密碼</label>
               <input
                 type="text"
                 class="form-control inputTool"
                 placeholder="請輸入新密碼"
                 id="setting-newPassword"
+                v-model="password"
               />
             </div>
             <div>
@@ -104,10 +179,11 @@ export default {
                 class="form-control inputTool"
                 placeholder="再次輸入新密碼"
                 id="setting-rePassword"
+                v-model="confirmPassword"
               />
             </div>
-            <button type="button" class="btn btn-primary">重設密碼</button>
-          </div>
+            <button type="submit" class="btn btn-primary">重設密碼</button>
+          </form>
         </div>
       </div>
     </div>
@@ -126,6 +202,15 @@ export default {
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
+    cursor: pointer;
+  }
+  &__btn {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    white-space: nowrap;
+    z-index: 100;
   }
   &::after {
     content: '';

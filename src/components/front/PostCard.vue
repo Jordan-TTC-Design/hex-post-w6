@@ -1,7 +1,8 @@
 <script>
 export default {
   props: ['post-item'],
-  setup() {
+  setup(props) {
+    console.log(props.postItem);
     return {};
   },
 };
@@ -9,8 +10,12 @@ export default {
 
 <template>
   <div class="postBox gap-3">
-    <div class="userBox gap-3">
-      <img class="userBox__pic" :src="postItem.user.photo" :alt="`${postItem.user.name}照片`" />
+    <div class="userBox gap-3" v-if="postItem.user">
+      <img
+        class="userBox__pic"
+        :src="postItem.user.photo || ''"
+        :alt="`${postItem.user.name}照片`"
+      />
       <div>
         <p class="userBox__title">{{ postItem.user.name }}</p>
         <p class="userBox__subTxt">{{ postItem.creatAt }}</p>

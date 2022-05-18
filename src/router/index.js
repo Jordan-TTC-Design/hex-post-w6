@@ -17,12 +17,12 @@ const routes = [
         component: () => import('../views/front/MyPage.vue'),
       },
       {
-        path: 'login',
+        path: 'log-in',
         name: 'LoginPage',
         component: () => import('../views/front/LoginPage.vue'),
       },
       {
-        path: 'register',
+        path: 'sign-up',
         name: 'RegisterPage',
         component: () => import('../views/front/RegisterPage.vue'),
       },

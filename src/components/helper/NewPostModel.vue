@@ -16,16 +16,11 @@ export default {
     const imgUploadGetter = ref(null);
     const editPhoto = ref(false);
     const newPost = ref({
-      user: '62729881e8a0d4cba032e7bc',
       postContent: '',
       postImgUrl: '',
     });
     const imgData = ref(null);
     const imgHistory = ref('');
-    // function resetData() {
-    //   imgHistory.value = '';
-    //   editPhoto.value = false;
-    // }
     function toogleGetter() {
       const [file] = imgUploadGetter.value.files;
       imgData.value = file;
@@ -53,7 +48,6 @@ export default {
         newPost.value.postImgUrl = imgHistory.value;
         postsData.addPost(newPost.value);
       }
-      // resetData();
     }
 
     return {

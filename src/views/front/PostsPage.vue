@@ -17,7 +17,6 @@ export default {
     function sortPostsData() {
       postsData.getPosts(postSort.value, postQuery.value);
     }
-
     return {
       postSort,
       postQuery,

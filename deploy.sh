@@ -22,6 +22,6 @@ git commit -m 'deploy'
 # 部署到 https://<USERNAME>.github.io/<REPO>
 # git push -f git@github.com:<USERNAME>/<REPO>.git main:gh-pages
 # HTTPS 模式
-git push -f https://github.com/Jordan-TTC-Design/hex-post-w4.git  main:gh-pages
+git push -f https://github.com/Jordan-TTC-Design/hex-post-w6.git  main:gh-pages
 
 cd -

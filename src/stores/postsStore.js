@@ -14,9 +14,9 @@ const postsStore = defineStore({
   getters: {},
   actions: {
     getPosts(timeSort = 'asc', query = '') {
-      console.log(`https://hex-post-w4.herokuapp.com/posts/all?timeSort=${timeSort}&q=${query}`);
+      console.log(`https://hex-node-w6.herokuapp.com/posts/all?timeSort=${timeSort}&q=${query}`);
       axios
-        .get(`https://hex-post-w4.herokuapp.com/posts/all?timeSort=${timeSort}&q=${query}`)
+        .get(`https://hex-node-w6.herokuapp.com/posts/all?timeSort=${timeSort}&q=${query}`)
         .then((res) => {
           console.log(res.data);
           this.posts = res.data.data;
@@ -27,10 +27,18 @@ const postsStore = defineStore({
     },
     addPost(data) {
       console.log(data);
-      axios
-        .post('https://hex-post-w4.herokuapp.com/posts', data)
+      const token = localStorage.getItem('hex-w6-token');
+      console.log(token);
+      axios({
+        method: 'POST',
+        url: 'https://hex-node-w6.herokuapp.com/posts',
+        data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((res) => {
-          console.log(res.data);
+          console.log(res);
           return res.data;
         })
         .catch((err) => {
@@ -43,7 +51,7 @@ const postsStore = defineStore({
       formdata.append('image', data);
       const config = {
         method: 'POST',
-        url: 'https://hex-post-w4.herokuapp.com/other/image',
+        url: 'https://hex-node-w6.herokuapp.com/other/image',
         data: formdata,
       };
       try {
