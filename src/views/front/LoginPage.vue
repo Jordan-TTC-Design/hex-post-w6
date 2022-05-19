@@ -1,13 +1,28 @@
 <script>
 import userStore from '@/stores/userStore';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
     const userData = userStore();
+    const router = useRouter();
     const email = ref('');
     const password = ref('');
-    return { userData, email, password };
+    async function login() {
+      try {
+        const result = await userData.logIn(email.value, password.value);
+        console.log(result);
+        if (result) {
+          router.push('/');
+        } else {
+          console.log('帳密錯誤');
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    return { login, email, password };
   },
 };
 </script>
@@ -22,10 +37,7 @@ export default {
               <img class="mw-100" src="@/assets/image/login-img.svg" alt="登入圖片" />
             </div>
             <div class="col">
-              <form
-                class="d-flex flex-column"
-                @submit.prevent="userData.logIn(email, password)"
-              >
+              <form class="d-flex flex-column" @submit.prevent="login">
                 <h2 class="fw-bold text-primary text-center">MetaWall</h2>
                 <p class="fw-bold text-dark text-center mb-7">到元宇宙展開全新社交圈</p>
                 <div class="input-group inputToolContainer mb-3">

@@ -27,7 +27,7 @@ const postsStore = defineStore({
     },
     addPost(data) {
       console.log(data);
-      const token = localStorage.getItem('hex-w6-token');
+      const token = localStorage.getItem('hex-w6-token') || '';
       console.log(token);
       axios({
         method: 'POST',

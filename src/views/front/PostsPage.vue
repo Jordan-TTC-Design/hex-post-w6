@@ -65,7 +65,7 @@ export default {
         </div>
       </div>
       <div class="col-4">
-        <DynamicWall />
+        <DynamicWall/>
       </div>
     </div>
   </div>

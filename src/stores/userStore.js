@@ -6,12 +6,13 @@ const userStore = defineStore({
   state: () => ({
     user: {},
     tempUser: { photo: '' },
+    targetUser: { id: '' },
   }),
   getters: {},
   actions: {
-    getMyUserData() {
-      const token = localStorage.getItem('hex-w6-token');
-      axios({
+    async getUserData() {
+      const token = localStorage.getItem('hex-w6-token') || '';
+      return axios({
         method: 'GET',
         url: 'https://hex-node-w6.herokuapp.com/users/profile',
         headers: {
@@ -29,10 +30,10 @@ const userStore = defineStore({
           console.dir(err);
         });
     },
-    updateUserData(data) {
+    async updateUserData(data) {
       console.log(data);
-      const token = localStorage.getItem('hex-w6-token');
-      axios({
+      const token = localStorage.getItem('hex-w6-token') || '';
+      return axios({
         method: 'PATCH',
         url: 'https://hex-node-w6.herokuapp.com/users/profile',
         data,
@@ -42,15 +43,16 @@ const userStore = defineStore({
       })
         .then((res) => {
           console.log(res);
-          // this.user = res.data.data;
+          this.user = res.data.data;
+          return res.data;
         })
         .catch((err) => {
           console.dir(err);
         });
     },
-    updateMyPassword(oldPassword, password, confirmPassword) {
-      const token = localStorage.getItem('hex-w6-token');
-      axios({
+    async updateMyPassword(oldPassword, password, confirmPassword) {
+      const token = localStorage.getItem('hex-w6-token') || '';
+      return axios({
         method: 'POST',
         url: 'https://hex-node-w6.herokuapp.com/users/update-password',
         data: { oldPassword, password, confirmPassword },
@@ -60,16 +62,16 @@ const userStore = defineStore({
       })
         .then((res) => {
           console.log(res);
-          // this.user = res.data.data;
           this.logIn(this.user, password);
+          return res.data;
         })
         .catch((err) => {
           console.dir(err);
         });
     },
-    logIn(email, password) {
+    async logIn(email, password) {
       console.log(email, password);
-      axios
+      return axios
         .post('https://hex-node-w6.herokuapp.com/users/log-in', { email, password })
         .then((res) => {
           console.log(res);
@@ -77,6 +79,7 @@ const userStore = defineStore({
             this.user = res.data.user;
             localStorage.setItem('hex-w6-token', res.data.user.token);
           }
+          return res.data;
         })
         .catch((err) => {
           console.dir(err);
@@ -90,6 +93,7 @@ const userStore = defineStore({
           console.log(res);
           this.user = res.data.user;
           localStorage.setItem('hex-w6-token', res.data.user.token);
+          return res.data;
         })
         .catch((err) => {
           console.dir(err);

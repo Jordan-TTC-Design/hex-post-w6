@@ -4,15 +4,15 @@ import statusStore from '@/stores/statusStore';
 
 export default {
   setup() {
-    const { user } = userStore();
+    const userData = userStore();
     const statusData = statusStore();
-    return { user, statusData };
+    return { userData, statusData };
   },
 };
 </script>
 
 <template>
-  <div class="dynamic-wall rounded d-flex flex-column gap-2 px-3 py-3">
+  <div  v-if="userData.user._id" class="dynamic-wall rounded d-flex flex-column gap-2 px-3 py-3">
     <button
       type="button"
       @click="statusData.newPostModel = true"
@@ -21,8 +21,8 @@ export default {
       <p class="text-white">張貼動態</p>
     </button>
     <RouterLink to="/my-page" class="d-flex align-items-center gap-2 py-2">
-      <img class="userPhoto" :src="user.photo" :alt="user.name" />
-      <p>{{ user.name }}</p>
+      <img class="userPhoto" :src="userData.user.photo" :alt="userData.user.name" />
+      <p>{{ userData.user.name }}</p>
     </RouterLink>
     <RouterLink to="/follow" class="d-flex align-items-center gap-2 py-2">
       <i class="bi bi-bell"></i>
